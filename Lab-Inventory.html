@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en" class=""> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Inventory & Borrowing - Letran Calamba</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        
+        :root {
+            --color-primary-light: #3B82F6; /* Blue-500 */
+            --color-primary-dark: #2563EB;  /* Blue-600 */
+            --color-secondary-light: #E5E7EB; /* Gray-200 */
+            --color-secondary-dark: #9CA3AF; /* Gray-400 */
+            --color-accent-light: #EF4444; /* Red-500 */
+            --color-accent-dark: #DC2626; /* Red-600 */
+            --color-text-light: #1F2937; /* Gray-800 */
+            --color-text-dark: #F3F4F6; /* Gray-100 */
+            --color-bg-light: #f0f4f8; /* Light blue-gray */
+            --color-bg-dark: #111827; /* Gray-900 */
+            --color-card-bg-light: white;
+            --color-card-bg-dark: #1F2937; /* Gray-800 */
+            --color-border-light: #D1D5DB; /* Gray-300 */
+            --color-border-dark: #374151; /* Gray-700 */
+        }
+
+        html.dark {
+            --color-primary-light: #60A5FA; /* Blue-400 */
+            --color-primary-dark: #3B82F6;  /* Blue-500 */
+            --color-secondary-light: #374151; /* Gray-700 */
+            --color-secondary-dark: #4B5563; /* Gray-600 */
+            /* --color-accent-light: #F87171; Red-400 */
+            /* --color-accent-dark: #EF4444; Red-500 */
+            --color-text-light: #F3F4F6; /* Gray-100 */
+            --color-text-dark: #D1D5DB; /* Gray-300 */
+            --color-bg-light: #111827; /* Gray-900 */
+            --color-bg-dark: #000000; /* Black */
+            --color-card-bg-light: #1F2937; /* Gray-800 */
+            --color-card-bg-dark: #111827; /* Gray-900 */
+            --color-border-light: #374151; /* Gray-700 */
+            --color-border-dark: #4B5563; /* Gray-600 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header-title {
+            color: var(--color-primary-dark);
+            /* Letran Calamba - Arriba Letran! */
+        }
+        html.dark .header-title {
+             color: var(--color-primary-light);
+        }
+
+        .card {
+            background-color: var(--color-card-bg-light);
+            border: 1px solid var(--color-border-light);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border: none;
+        }
+        .btn-primary {
+            background-color: var(--color-primary-light);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--color-primary-dark);
+        }
+        .btn-secondary {
+            background-color: var(--color-secondary-dark);
+            color: var(--color-text-dark);
+        }
+        html.dark .btn-secondary {
+             color: var(--color-text-light); /* Ensure text is visible on dark secondary buttons */
+        }
+        .btn-secondary:hover {
+            background-color: var(--color-secondary-light);
+        }
+        .btn-danger {
+            background-color: var(--color-accent-light);
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: var(--color-accent-dark);
+        }
+        .input-field, .select-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--color-border-light);
+            background-color: var(--color-bg-light); /* Match body bg for inputs */
+            color: var(--color-text-light);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        html.dark .input-field, html.dark .select-field {
+             background-color: var(--color-card-bg-dark); /* Slightly different for contrast in dark mode */
+        }
+        .table-auto th, .table-auto td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--color-border-light);
+            text-align: left;
+        }
+        .table-auto th {
+            background-color: var(--color-secondary-light); /* Lighter for light mode header */
+            font-weight: 600;
+        }
+        html.dark .table-auto th {
+            background-color: var(--color-card-bg-dark); /* Darker for dark mode header */
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: var(--color-card-bg-light);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            color: var(--color-text-light);
+        }
+        label {
+            color: var(--color-text-light);
+        }
+        /* Hide sections by default */
+        #adminView, #studentView, #borrowItemModal, #updateConditionModal {
+            display: none;
+        }
+        .theme-toggle-button {
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="flex justify-between items-center py-6">
+            <h1 class="text-4xl font-bold header-title">Lab Inventory - Letran Calamba</h1>
+            <div>
+                <button id="themeToggleBtn" class="theme-toggle-button mr-4">
+                    <i class="fas fa-moon"></i> </button>
+                <span id="currentUser" class="text-sm mt-2 mr-4"></span>
+                <button id="logoutButton" class="btn btn-secondary" style="display: none;">Logout</button>
+            </div>
+        </header>
+
+        <div id="loginView" class="card max-w-md mx-auto">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium mb-1">Username</label>
+                    <input type="text" id="username" class="input-field" required placeholder="admin or student">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="password" class="input-field" required placeholder="password">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Login</button>
+            </form>
+            <p id="loginError" class="text-red-500 text-sm mt-3 text-center"></p>
+        </div>
+
+        <div id="adminView" class="space-y-6">
+            <h2 class="text-3xl font-semibold">Admin Dashboard</h2>
+            
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-4">Add New Item</h3>
+                <form id="addItemForm" class="space-y-4">
+                    <div>
+                        <label for="itemName" class="block text-sm font-medium">Item Name</label>
+                        <input type="text" id="itemName" class="input-field" required>
+                    </div>
+                    <div>
+                        <label for="itemDescription" class="block text-sm font-medium">Description</label>
+                        <textarea id="itemDescription" class="input-field" rows="3"></textarea>
+                    </div>
+                    <div>
+                        <label for="itemCategory" class="block text-sm font-medium">Category</label>
+                        <input type="text" id="itemCategory" class="input-field">
+                    </div>
+                    <div>
+                        <label for="itemQuantity" class="block text-sm font-medium">Total Quantity</label>
+                        <input type="number" id="itemQuantity" class="input-field" required min="1">
+                    </div>
+                    <div>
+                        <label for="itemCondition" class="block text-sm font-medium">Condition</label>
+                        <select id="itemCondition" class="select-field">
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="damaged">Damaged</option>
+                            <option value="obsolete">Obsolete</option>
+                            <option value="maintenance">Needs Maintenance</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Item</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-4">Current Inventory</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Total</th>
+                                <th>Available</th>
+                                <th>Condition</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminInventoryList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-4">Borrowing Requests</h3>
+                <div id="adminBorrowingRequests" class="overflow-x-auto">
+                     <table class="w-full table-auto">
+                        <thead>
+                            <tr>
+                                <th>Req ID</th>
+                                <th>Item Name</th>
+                                <th>User</th>
+                                <th>Qty</th>
+                                <th>Intended Use</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminRequestsList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-4">Reports</h3>
+                <div class="space-x-3">
+                    <button id="generateInventoryReport" class="btn btn-secondary">Inventory Report</button>
+                    <button id="generateBorrowingReport" class="btn btn-secondary">Borrowing History Report</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="studentView" class="space-y-6">
+            <h2 class="text-3xl font-semibold">Student Dashboard</h2>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-2">Available Items for Borrowing</h3>
+                <div class="mb-4">
+                    <input type="text" id="studentSearchInput" class="input-field" placeholder="Search by name or category...">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Available</th>
+                                <th>Condition</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentInventoryList"></tbody>
+                    </table>
+                    <p id="noStudentItemsFound" class="text-center py-4" style="display:none;">No items match your search.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-4">My Borrowing Requests</h3>
+                <div id="studentMyRequests" class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr>
+                                <th>Req ID</th>
+                                <th>Item Name</th>
+                                <th>Qty</th>
+                                <th>Intended Use</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentRequestsList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="borrowItemModal" class="modal">
+            <div class="modal-content">
+                <h3 class="text-xl font-semibold mb-4">Borrow Item: <span id="modalItemName"></span></h3>
+                <form id="borrowItemForm">
+                    <input type="hidden" id="modalItemId">
+                    <div class="mb-4">
+                        <label for="borrowQuantity" class="block text-sm font-medium">Quantity</label>
+                        <input type="number" id="borrowQuantity" class="input-field" required min="1">
+                    </div>
+                    <div class="mb-4">
+                        <label for="intendedUseDate" class="block text-sm font-medium">Intended Use Date</label>
+                        <input type="date" id="intendedUseDate" class="input-field" required>
+                        <p id="dateError" class="text-red-500 text-sm mt-1"></p>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelBorrow" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="updateConditionModal" class="modal">
+            <div class="modal-content">
+                <h3 class="text-xl font-semibold mb-4">Update Condition: <span id="conditionModalItemName"></span></h3>
+                <form id="updateConditionForm">
+                    <input type="hidden" id="conditionModalItemId">
+                    <div class="mb-4">
+                        <label for="newCondition" class="block text-sm font-medium">New Condition</label>
+                        <select id="newCondition" class="select-field">
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="damaged">Damaged</option>
+                            <option value="obsolete">Obsolete</option>
+                            <option value="maintenance">Needs Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelUpdateCondition" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Condition</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="messageModal" class="modal" style="display:none;">
+            <div class="modal-content text-center">
+                <p id="messageText" class="text-lg mb-4"></p>
+                <button id="closeMessageModal" class="btn btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Mock Data ---
+        let users = [
+            { id: 1, username: 'admin', password: 'password', role: 'admin' },
+            { id: 2, username: 'student', password: 'password', role: 'student' }
+        ];
+
+        let inventory = [
+            { id: 1, name: 'Microscope Model A', description: 'Standard optical microscope', category: 'Optics', totalQuantity: 5, availableQuantity: 3, condition: 'good' },
+            { id: 2, name: 'Beaker Set (50ml-500ml)', description: 'Glass beakers for various volumes', category: 'Glassware', totalQuantity: 10, availableQuantity: 10, condition: 'good' },
+            { id: 3, name: 'Digital Multimeter', description: 'Measures voltage, current, resistance', category: 'Electronics', totalQuantity: 3, availableQuantity: 1, condition: 'fair' },
+            { id: 4, name: 'Bunsen Burner', description: 'Gas burner for heating', category: 'Heating Equipment', totalQuantity: 8, availableQuantity: 8, condition: 'damaged' },
+        ];
+
+        let borrowingRequests = [];
+        let nextRequestId = 1;
+        let nextItemId = 5;
+        let currentUser = null;
+
+        // --- DOM Elements ---
+        const loginView = document.getElementById('loginView');
+        const adminView = document.getElementById('adminView');
+        const studentView = document.getElementById('studentView');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const currentUserDisplay = document.getElementById('currentUser');
+        const logoutButton = document.getElementById('logoutButton');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+        const addItemForm = document.getElementById('addItemForm');
+        const adminInventoryList = document.getElementById('adminInventoryList');
+        const adminRequestsList = document.getElementById('adminRequestsList');
+        const generateInventoryReportBtn = document.getElementById('generateInventoryReport');
+        const generateBorrowingReportBtn = document.getElementById('generateBorrowingReport');
+
+        const studentInventoryList = document.getElementById('studentInventoryList');
+        const studentRequestsList = document.getElementById('studentRequestsList');
+        const studentSearchInput = document.getElementById('studentSearchInput');
+        const noStudentItemsFound = document.getElementById('noStudentItemsFound');
+        
+        const borrowItemModal = document.getElementById('borrowItemModal');
+        const modalItemName = document.getElementById('modalItemName');
+        const modalItemIdInput = document.getElementById('modalItemId');
+        const borrowItemForm = document.getElementById('borrowItemForm');
+        const intendedUseDateInput = document.getElementById('intendedUseDate');
+        const dateError = document.getElementById('dateError');
+        const cancelBorrowButton = document.getElementById('cancelBorrow');
+        const borrowQuantityInput = document.getElementById('borrowQuantity');
+
+        const updateConditionModal = document.getElementById('updateConditionModal');
+        const conditionModalItemName = document.getElementById('conditionModalItemName');
+        const conditionModalItemIdInput = document.getElementById('conditionModalItemId');
+        const updateConditionForm = document.getElementById('updateConditionForm');
+        const newConditionSelect = document.getElementById('newCondition');
+        const cancelUpdateConditionButton = document.getElementById('cancelUpdateCondition');
+
+        const messageModal = document.getElementById('messageModal');
+        const messageText = document.getElementById('messageText');
+        const closeMessageModalButton = document.getElementById('closeMessageModal');
+
+        // --- Theme Toggle ---
+        function setMode(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon for dark mode
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon for light mode
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            setMode(!document.documentElement.classList.contains('dark'));
+        });
+
+        // Check local storage for theme preference
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            setMode(true);
+        } else {
+            setMode(false); // Default to light
+        }
+
+        // --- Utility Functions ---
+        function showView(viewToShow) {
+            loginView.style.display = 'none';
+            adminView.style.display = 'none';
+            studentView.style.display = 'none';
+            viewToShow.style.display = 'block';
+        }
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageModal.style.display = 'flex';
+        }
+        
+        closeMessageModalButton.addEventListener('click', () => {
+            messageModal.style.display = 'none';
+        });
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // --- Render Functions ---
+        function renderAdminInventory() {
+            adminInventoryList.innerHTML = '';
+            inventory.forEach(item => {
+                const row = adminInventoryList.insertRow();
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.category}</td>
+                    <td>${item.totalQuantity}</td>
+                    <td>${item.availableQuantity}</td>
+                    <td class="capitalize">${item.condition}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary mr-1 text-xs" onclick="openUpdateConditionModal(${item.id})">Condition</button>
+                        <button class="btn btn-sm btn-danger text-xs" onclick="deleteItem(${item.id})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function renderStudentInventory(searchTerm = '') {
+            studentInventoryList.innerHTML = '';
+            const lowerSearchTerm = searchTerm.toLowerCase();
+            const filteredItems = inventory.filter(item => 
+                item.availableQuantity > 0 && 
+                (item.condition === 'good' || item.condition === 'fair') && // Only show borrowable items
+                (item.name.toLowerCase().includes(lowerSearchTerm) || 
+                 item.category.toLowerCase().includes(lowerSearchTerm))
+            );
+
+            if (filteredItems.length === 0) {
+                noStudentItemsFound.style.display = 'block';
+            } else {
+                noStudentItemsFound.style.display = 'none';
+                filteredItems.forEach(item => {
+                    const row = studentInventoryList.insertRow();
+                    row.innerHTML = `
+                        <td>${item.id}</td>
+                        <td>${item.name}</td>
+                        <td>${item.category}</td>
+                        <td>${item.description}</td>
+                        <td>${item.availableQuantity}</td>
+                        <td class="capitalize">${item.condition}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary text-xs" onclick="openBorrowModal(${item.id})">Borrow</button>
+                        </td>
+                    `;
+                });
+            }
+        }
+        
+        function renderAdminRequests() {
+            adminRequestsList.innerHTML = '';
+            borrowingRequests.forEach(req => {
+                const item = inventory.find(i => i.id === req.itemId);
+                const user = users.find(u => u.id === req.userId);
+                const row = adminRequestsList.insertRow();
+                row.innerHTML = `
+                    <td>${req.id}</td>
+                    <td>${item ? item.name : 'N/A'}</td>
+                    <td>${user ? user.username : 'N/A'}</td>
+                    <td>${req.quantity}</td>
+                    <td>${formatDate(req.intendedUseDate)}</td>
+                    <td class="capitalize">${req.status}</td>
+                    <td>
+                        ${req.status === 'pending' ? `
+                            <button class="btn btn-sm btn-primary mr-1 text-xs" onclick="approveRequest(${req.id})">Approve</button>
+                            <button class="btn btn-sm btn-danger text-xs" onclick="rejectRequest(${req.id})">Reject</button>
+                        ` : req.status === 'approved' ? `
+                            <button class="btn btn-sm btn-primary text-xs" onclick="markAsBorrowed(${req.id})">Mark Borrowed</button>
+                        ` : req.status === 'borrowed' ? `
+                            <button class="btn btn-sm btn-primary text-xs" onclick="markAsReturned(${req.id})">Mark Returned</button>
+                        ` : ''
+                        }
+                    </td>
+                `;
+            });
+        }
+
+        function renderStudentMyRequests() {
+            studentRequestsList.innerHTML = '';
+            const myRequests = borrowingRequests.filter(req => req.userId === currentUser.id);
+            myRequests.forEach(req => {
+                const item = inventory.find(i => i.id === req.itemId);
+                const row = studentRequestsList.insertRow();
+                row.innerHTML = `
+                    <td>${req.id}</td>
+                    <td>${item ? item.name : 'N/A'}</td>
+                    <td>${req.quantity}</td>
+                    <td>${formatDate(req.intendedUseDate)}</td>
+                    <td class="capitalize">${req.status}</td>
+                `;
+            });
+        }
+
+        // --- Event Handlers & Logic ---
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            loginError.textContent = '';
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                currentUserDisplay.textContent = `Logged in as: ${currentUser.username} (${currentUser.role})`;
+                logoutButton.style.display = 'inline-block';
+                if (user.role === 'admin') {
+                    showView(adminView);
+                    renderAdminInventory();
+                    renderAdminRequests();
+                } else {
+                    showView(studentView);
+                    renderStudentInventory();
+                    renderStudentMyRequests();
+                }
+            } else {
+                loginError.textContent = 'Invalid username or password.';
+            }
+        });
+
+        logoutButton.addEventListener('click', () => {
+            currentUser = null;
+            currentUserDisplay.textContent = '';
+            logoutButton.style.display = 'none';
+            loginForm.reset();
+            showView(loginView);
+        });
+
+        addItemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newItem = {
+                id: nextItemId++,
+                name: document.getElementById('itemName').value,
+                description: document.getElementById('itemDescription').value,
+                category: document.getElementById('itemCategory').value,
+                totalQuantity: parseInt(document.getElementById('itemQuantity').value),
+                availableQuantity: parseInt(document.getElementById('itemQuantity').value),
+                condition: document.getElementById('itemCondition').value
+            };
+            inventory.push(newItem);
+            renderAdminInventory();
+            showMessage(`Item "${newItem.name}" added successfully.`);
+            addItemForm.reset();
+        });
+        
+        window.deleteItem = function(itemId) {
+            const itemIndex = inventory.findIndex(item => item.id === itemId);
+            if (itemIndex > -1) {
+                // Check if item has pending or active borrowing requests
+                const hasActiveRequests = borrowingRequests.some(req => req.itemId === itemId && (req.status === 'pending' || req.status === 'approved' || req.status === 'borrowed'));
+                if (hasActiveRequests) {
+                    showMessage(`Cannot delete "${inventory[itemIndex].name}". It has active or pending borrowing requests.`);
+                    return;
+                }
+                const itemName = inventory[itemIndex].name;
+                inventory.splice(itemIndex, 1);
+                renderAdminInventory();
+                renderStudentInventory(studentSearchInput.value); 
+                showMessage(`Item "${itemName}" deleted.`);
+            }
+        }
+
+        // Student Search
+        studentSearchInput.addEventListener('input', (e) => {
+            renderStudentInventory(e.target.value);
+        });
+
+        window.openBorrowModal = function(itemId) {
+            const item = inventory.find(i => i.id === itemId);
+            if (item) {
+                modalItemName.textContent = item.name;
+                modalItemIdInput.value = item.id;
+                borrowQuantityInput.value = 1;
+                borrowQuantityInput.max = item.availableQuantity;
+                intendedUseDateInput.value = '';
+                dateError.textContent = '';
+                
+                const today = new Date();
+                const minDate = new Date(today);
+                minDate.setDate(today.getDate() + 3);
+                intendedUseDateInput.min = minDate.toISOString().split('T')[0];
+
+                borrowItemModal.style.display = 'flex';
+            }
+        }
+
+        cancelBorrowButton.addEventListener('click', () => {
+            borrowItemModal.style.display = 'none';
+        });
+
+        borrowItemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const itemId = parseInt(modalItemIdInput.value);
+            const quantity = parseInt(borrowQuantityInput.value);
+            const intendedUseDateStr = intendedUseDateInput.value;
+            dateError.textContent = '';
+
+            const item = inventory.find(i => i.id === itemId);
+            if (!item || quantity <= 0 || quantity > item.availableQuantity) {
+                showMessage("Invalid quantity or item not available.");
+                return;
+            }
+
+            const today = new Date(); today.setHours(0,0,0,0);
+            const intendedDate = new Date(intendedUseDateStr); intendedDate.setHours(0,0,0,0);
+            const threeDaysFromNow = new Date(today); threeDaysFromNow.setDate(today.getDate() + 3);
+
+            if (intendedDate < threeDaysFromNow) {
+                dateError.textContent = 'Intended use date must be at least 3 days from today.';
+                return;
+            }
+
+            const newRequest = {
+                id: nextRequestId++,
+                itemId: itemId,
+                userId: currentUser.id,
+                quantity: quantity,
+                requestDate: new Date().toISOString().split('T')[0],
+                intendedUseDate: intendedUseDateStr,
+                status: 'pending'
+            };
+            borrowingRequests.push(newRequest);
+            
+            showMessage(`Borrow request for "${item.name}" submitted.`);
+            borrowItemModal.style.display = 'none';
+            renderStudentMyRequests();
+            if (adminView.style.display === 'block') renderAdminRequests();
+        });
+
+        // Admin: Approve/Reject/Manage Requests
+        window.approveRequest = function(requestId) {
+            const request = borrowingRequests.find(r => r.id === requestId);
+            const item = inventory.find(i => i.id === request.itemId);
+            if (request && item) {
+                if (item.availableQuantity >= request.quantity) {
+                    request.status = 'approved';
+                    showMessage(`Request ID ${requestId} approved.`);
+                } else {
+                    request.status = 'rejected';
+                    showMessage(`Request ID ${requestId} rejected due to insufficient stock for "${item.name}".`);
+                }
+                renderAdminRequests();
+                if (studentView.style.display === 'block' && currentUser.id === request.userId) renderStudentMyRequests();
+            }
+        }
+        window.rejectRequest = function(requestId) {
+            const request = borrowingRequests.find(r => r.id === requestId);
+            if (request) {
+                request.status = 'rejected';
+                showMessage(`Request ID ${requestId} rejected.`);
+                renderAdminRequests();
+                if (studentView.style.display === 'block' && currentUser.id === request.userId) renderStudentMyRequests();
+            }
+        }
+        window.markAsBorrowed = function(requestId) {
+            const request = borrowingRequests.find(r => r.id === requestId);
+            const item = inventory.find(i => i.id === request.itemId);
+            if (request && item && request.status === 'approved') {
+                if (item.availableQuantity >= request.quantity) {
+                    item.availableQuantity -= request.quantity;
+                    request.status = 'borrowed';
+                    request.borrowDate = new Date().toISOString().split('T')[0];
+                    showMessage(`Item for request ID ${requestId} marked as borrowed. Stock updated.`);
+                    renderAdminInventory();
+                    renderStudentInventory(studentSearchInput.value);
+                } else {
+                     showMessage(`Cannot mark as borrowed. Insufficient stock for item "${item.name}".`);
+                }
+                renderAdminRequests();
+                if (studentView.style.display === 'block' && currentUser.id === request.userId) renderStudentMyRequests();
+            }
+        }
+        window.markAsReturned = function(requestId) {
+            const request = borrowingRequests.find(r => r.id === requestId);
+            const item = inventory.find(i => i.id === request.itemId);
+            if (request && item && request.status === 'borrowed') {
+                item.availableQuantity += request.quantity;
+                // Ensure available quantity does not exceed total quantity
+                if (item.availableQuantity > item.totalQuantity) {
+                    item.availableQuantity = item.totalQuantity;
+                }
+                request.status = 'returned';
+                request.returnDate = new Date().toISOString().split('T')[0];
+                showMessage(`Item for request ID ${requestId} marked as returned. Stock updated.`);
+                renderAdminInventory();
+                renderStudentInventory(studentSearchInput.value);
+                renderAdminRequests();
+                if (studentView.style.display === 'block' && currentUser.id === request.userId) renderStudentMyRequests();
+            }
+        }
+
+        // Admin: Update Item Condition
+        window.openUpdateConditionModal = function(itemId) {
+            const item = inventory.find(i => i.id === itemId);
+            if (item) {
+                conditionModalItemName.textContent = item.name;
+                conditionModalItemIdInput.value = item.id;
+                newConditionSelect.value = item.condition;
+                updateConditionModal.style.display = 'flex';
+            }
+        }
+
+        cancelUpdateConditionButton.addEventListener('click', () => {
+            updateConditionModal.style.display = 'none';
+        });
+
+        updateConditionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const itemId = parseInt(conditionModalItemIdInput.value);
+            const newCondition = newConditionSelect.value;
+            const item = inventory.find(i => i.id === itemId);
+            if (item) {
+                item.condition = newCondition;
+                showMessage(`Condition for "${item.name}" updated to ${capitalizeFirstLetter(newCondition)}.`);
+                updateConditionModal.style.display = 'none';
+                renderAdminInventory();
+                renderStudentInventory(studentSearchInput.value); 
+            }
+        });
+
+        // Admin: Report Generation (Simulated)
+        generateInventoryReportBtn.addEventListener('click', () => {
+            showMessage("Inventory Report: This feature would typically generate a downloadable CSV or PDF. (Backend still on building)");
+            // In a real app, you'd collect data from `inventory` and format it.
+        });
+        generateBorrowingReportBtn.addEventListener('click', () => {
+            showMessage("Borrowing History Report: This feature would typically generate a downloadable CSV or PDF. (Backend still on building)");
+            // In a real app, you'd collect data from `borrowingRequests` and format it.
+        });
+
+
+        // --- Initial Setup ---
+        showView(loginView);
+
+    </script>
+</body>
+</html>
